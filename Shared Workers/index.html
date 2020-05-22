@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="text/javascript">
+      function body_loaded() {
+        // Check if window web worker project exists
+        if (window.SharedWorker) {
+          // Browser Support exists
+          window.document.getElementById("supported").style.display = "block";
+        } else {
+          window.document.getElementById("unsupported").style.display = "block";
+        }
+      }
+
+      function clicked() {
+        var myWorker = new SharedWorker("sharedWorker.js");
+        myWorker.port.start();
+        myWorker.port.onmessage = function (e) {
+          window.document.getElementById("number").value = event.data;
+        };
+
+        myWorker.port.postMessage([
+          parseInt(window.document.getElementById("number").value),
+        ]);
+      }
+    </script>
+  </head>
+  <body onload="body_loaded()">
+    <div id="supported" style="display: none;">
+      <input id="number" name="" value="0" id="input_text" />
+      <input type="button" value="Display Number" onclick="clicked()" />
+    </div>
+    <div id="unsupported" style="display: none;">Unsupported</div>
+  </body>
+</html>

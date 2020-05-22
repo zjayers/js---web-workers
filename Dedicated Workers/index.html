@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="text/javascript">
+      function body_loaded() {
+        // Check if window web worker project exists
+        if (window.Worker) {
+          // Browser Support exists
+          window.document.getElementById("supported").style.display = "block";
+        } else {
+          window.document.getElementById("unsupported").style.display = "block";
+        }
+      }
+
+      function clicked() {
+        if (window.document.getElementById("input_text").value === "") {
+          alert("Input is empty, input a number!");
+        } else {
+          var myWorker = new window.Worker("./worker.js");
+
+          myWorker.onmessage = function () {
+            var value = event.data.value;
+            var errorMessage = event.data.errorMessage;
+
+            if (errorMessage) {
+              alert("Error occured: " + errorMessage);
+            } else {
+              alert("Sum of 10 to the number is: " + value);
+            }
+            myWorker.terminate();
+          };
+
+          var myValue = parseInt(
+            window.document.getElementById("input_text").value
+          );
+
+          myWorker.onerror = function (err) {
+            error.preventDefault();
+            dispError(error.message);
+          };
+
+          myWorker.postMessage({ value: myValue });
+        }
+      }
+    </script>
+  </head>
+  <body onload="body_loaded()">
+    <div id="supported" style="display: none;">
+      <input type="text" name="" id="input_text" /><input
+        type="button"
+        value="Click to Add 10"
+        onclick="clicked()"
+      />
+    </div>
+    <div id="unsupported" style="display: none;">Unsupported</div>
+  </body>
+</html>
